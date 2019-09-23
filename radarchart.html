@@ -1,0 +1,304 @@
+<html>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+        <body>
+        </body>
+	<script>
+
+        //TODO: 
+        // -- Calculate the coordinates for the ticks 
+        // -- Calculate the coordinates for the ticks 
+
+    	let data = [];
+        let features = ["A","B","C","D","E","F"];
+
+        //input data for each dynamic axis
+        //main axis for printing circle objects and lines
+        let ticks = [2,4,6,8,10];
+
+        //data ticks
+        let ticksA = [2,4,6,8];
+        let ticksB = [0,3,5,7];
+        let ticksC = [20,27.5,35,42.5];
+        let ticksD = [100,200,300,400];
+        let ticksE = [8,9,10,11];
+        let ticksF = [0.1,0.2,0.3,0.4];
+        let listOfAllTicks =  [ticksA,ticksB,ticksC,ticksD,ticksD,ticksE,ticksF];
+        
+        
+        
+
+        //generate the data
+        
+        //ata = [{"A":2,"B":1,"C":20,"D":100,"E":8,"F":0.1}]
+        
+        //Random data generator
+        function getRandomNumberBetween(start,end) {
+            return Math.floor(Math.random()*(end-start))+start;
+        }
+
+        
+        var point = {}
+        //each feature will be a random number from 1-9
+        for (let i = 0; i < features.length; i++) {
+            point["A"] =  getRandomNumberBetween(2,8)+getRandomNumberBetween(0,11)/10;
+            point["B"] =  getRandomNumberBetween(1,7)+getRandomNumberBetween(0,11)/10;
+            point["C"] =  getRandomNumberBetween(20,42.5)+getRandomNumberBetween(0,11)/10;
+            point["D"] =  getRandomNumberBetween(100,400)+getRandomNumberBetween(0,11)/10;
+            point["E"] =  getRandomNumberBetween(8,11)+getRandomNumberBetween(0,11)/10;
+            point["F"] =  getRandomNumberBetween(1,5)/10;
+        }
+        data.push(point);
+            
+
+        
+        console.log(data);
+        
+        //Create Radial Scale's for each axis
+        ListRadialScale = [];
+        listOfAllTicks.forEach(t =>
+            ListRadialScale.push(
+                function()  {
+                        return d3.scaleLinear()
+                    .domain([Math.min.apply(null,t),Math.max.apply(null,t)])
+                    .range([63,250]);  
+                }
+                
+            )
+        );
+
+        //create body
+        let svg = d3.select("body").append("svg")
+        .attr("width", 600)
+        .attr("height",600);
+
+        //Implement scale for each axis
+        let radialScale = d3.scaleLinear()
+        .domain([Math.min.apply(null,ticks),Math.max.apply(null,ticks)])
+        .range([0,250]);
+
+        let radialScaleA = d3.scaleLinear()
+        .domain([Math.min.apply(null,ticksA),Math.max.apply(null,ticksA)])
+        .range([63,250]);
+
+        let radialScaleB = d3.scaleLinear()
+        .domain([Math.min.apply(null,ticksB),Math.max.apply(null,ticksB)])
+        .range([63,250]);
+
+        let radialScaleC = d3.scaleLinear()
+        .domain([Math.min.apply(null,ticksC),Math.max.apply(null,ticksC)])
+        .range([63,250]);
+
+        let radialScaleD = d3.scaleLinear()
+        .domain([Math.min.apply(null,ticksD),Math.max.apply(null,ticksD)])
+        .range([63,250]);
+
+        let radialScaleE = d3.scaleLinear()
+        .domain([Math.min.apply(null,ticksE),Math.max.apply(null,ticksE)])
+        .range([63,250]);
+
+        let radialScaleF = d3.scaleLinear()
+        .domain([Math.min.apply(null,ticksF),Math.max.apply(null,ticksF)])
+        .range([63,250]);
+
+        svg.append("box")
+        .attr("")
+        
+        /*
+        //Draw circle
+        ticks.forEach(t=>
+            svg.append("circle")
+            .attr("cx",300)
+            .attr("cy",300)
+            .attr("fill","none")
+            .attr("stroke","grey")
+            .attr("r",radialScale(t))
+        );
+        */
+        function angleToCoordinate(angle,value){
+        	let x = Math.cos(angle) * radialScale(value);
+           	let y = Math.sin(angle) * radialScale(value);
+           	return {"x":300 + x,"y" : 300 - y};
+        }
+
+        function angleToCoordinateDynamic(angle, value, ft_name){
+        	let x;
+        	let y;
+        	if(ft_name=="A"){
+        		x = Math.cos(angle) * radialScaleA(value);
+           		y = Math.sin(angle) * radialScaleA(value);
+           		
+        	}
+        	if(ft_name=="B"){
+        		x = Math.cos(angle) * radialScaleB(value);
+           		y = Math.sin(angle) * radialScaleB(value);
+        	}
+        	if(ft_name=="C"){
+        		x = Math.cos(angle) * radialScaleC(value);
+           		y = Math.sin(angle) * radialScaleC(value);
+        	}
+        	if(ft_name=="D"){
+        		x = Math.cos(angle) * radialScaleD(value);
+           		y = Math.sin(angle) * radialScaleD(value);
+        	}
+        	if(ft_name=="E"){
+        		x = Math.cos(angle) * radialScaleE(value);
+           		y = Math.sin(angle) * radialScaleE(value);           		
+        	}
+        	if(ft_name=="F"){
+        		x = Math.cos(angle) * radialScaleF(value);
+           		y = Math.sin(angle) * radialScaleF(value);
+        	}
+        	return {"x":300 + x,"y" : 300 - y};
+        }
+
+        //Print ticks according to axis
+        let angleA = (Math.PI/2) + (2*Math.PI*0/features.length);
+        let angleB = (Math.PI/2) + (2*Math.PI*1/features.length);
+        let angleC = (Math.PI/2) + (2*Math.PI*2/features.length);
+        let angleD = (Math.PI/2) + (2*Math.PI*3/features.length);
+        let angleE = (Math.PI/2) + (2*Math.PI*4/features.length);
+        let angleF = (Math.PI/2) + (2*Math.PI*5/features.length);
+
+        ticksA.forEach(t => {
+            let x = Math.cos(angleA) * radialScaleA(t);
+        	let y = Math.sin(angleA) * radialScaleA(t);
+        	tick_coordinate = {"x":300 + x,"y" : 300 - y};
+            svg.append("text")
+                .attr("x", tick_coordinate.x)
+                .attr("y", tick_coordinate.y)
+                .text(t.toString());
+        });
+        ticksB.forEach(t => {
+            let x = Math.cos(angleB) * radialScaleB(t);
+        	let y = Math.sin(angleB) * radialScaleB(t);
+        	tick_coordinate = {"x":300 + x,"y" : 300 - y};
+            svg.append("text")
+                .attr("x", tick_coordinate.x)
+                .attr("y", tick_coordinate.y)
+                .text(t.toString());
+        });
+        ticksC.forEach(t => {
+            let x = Math.cos(angleC) * radialScaleC(t);
+        	let y = Math.sin(angleC) * radialScaleC(t);
+        	tick_coordinate = {"x":300 + x,"y" : 300 - y};
+            svg.append("text")
+                .attr("x", tick_coordinate.x)
+                .attr("y", tick_coordinate.y)
+                .text(t.toString());
+        });
+        ticksD.forEach(t => {
+            let x = Math.cos(angleD) * radialScaleD(t);
+        	let y = Math.sin(angleD) * radialScaleD(t);
+        	tick_coordinate = {"x":300 + x,"y" : 300 - y};
+            svg.append("text")
+                .attr("x", tick_coordinate.x)
+                .attr("y", tick_coordinate.y)
+                .text(t.toString());
+        });
+        ticksE.forEach(t => {
+            let x = Math.cos(angleE) * radialScaleE(t);
+        	let y = Math.sin(angleE) * radialScaleE(t);
+        	tick_coordinate = {"x":300 + x,"y" : 300 - y};
+            svg.append("text")
+                .attr("x", tick_coordinate.x)
+                .attr("y", tick_coordinate.y)
+                .text(t.toString());
+        });
+        ticksF.forEach(t => {
+            let x = Math.cos(angleF) * radialScaleF(t);
+        	let y = Math.sin(angleF) * radialScaleF(t);
+        	tick_coordinate = {"x":300 + x,"y" : 300 - y};
+            svg.append("text")
+                .attr("x", tick_coordinate.x)
+                .attr("y", tick_coordinate.y)
+                .text(t.toString());
+        });
+
+        
+        for (var i = 0; i < features.length; i++){
+            let ft_name = features[i];
+            let angle = (Math.PI/2) + (2*Math.PI*i/features.length);
+            let line_coordinate = angleToCoordinate(angle,10);
+            let lable_coordinate = angleToCoordinate(angle,10.5);
+        
+            //Draw axis lines:
+            svg.append("line")
+            .attr("x1",300)
+            .attr("y1",300)
+            .attr("x2",line_coordinate.x)
+            .attr("y2",line_coordinate.y)
+            .attr("stroke","black");
+
+            //Draw axis label
+            svg.append("text")
+            .attr("x",lable_coordinate.x)
+            .attr("y",lable_coordinate.y)
+            .text(ft_name);
+        }
+
+        let line = d3.line()
+            .x(d=>d.x)
+            .y(d=>d.y);
+        
+        let colors = ["darkorange","grey","navy"];
+
+        function getPathCoordinates(data_point,data_name){
+            let coordinates = [];
+            for(var i = 0; i<features.length;i++){
+                let ft_name = data_name[i];
+                let angle = (Math.PI / 2) + (2*Math.PI * i / features.length);
+                coordinates.push(angleToCoordinateDynamic(angle,data_point[ft_name],ft_name.toString()));
+            }
+            return coordinates;
+        }
+
+        for(var i = 0; i<data.length; i++){
+            let d = data[i];
+            let color = colors[i];
+            let coordinates = getPathCoordinates(d,features);
+
+            //draw the path element
+            svg.append("path")
+            .datum(coordinates)
+            .attr("d",line)
+            .attr("stroke-width", 3)
+            .attr("stroke",color)
+            .attr("fill",color)
+            .attr("stroke-opacity",1)
+            .attr("opacity",0.5);
+
+            //data labels beta
+            svg.append("text")
+                .attr("x",coordinates[0].x)
+                .attr("y",coordinates[0].y)
+                .attr("fill",color)
+                .text(d.A.toString());
+                svg.append("text")
+                .attr("x",coordinates[1].x)
+                .attr("y",coordinates[1].y)
+                .attr("fill",color)
+                .text(d.B.toString());
+                svg.append("text")
+                .attr("x",coordinates[2].x)
+                .attr("y",coordinates[2].y)
+                .attr("fill",color)
+                .text(d.C.toString());
+                svg.append("text")
+                .attr("x",coordinates[3].x)
+                .attr("y",coordinates[3].y)
+                .attr("fill",color)
+                .text(d.D.toString());
+                svg.append("text")
+                .attr("x",coordinates[4].x)
+                .attr("y",coordinates[4].y)
+                .attr("fill",color)
+                .text(d.E.toString());
+                svg.append("text")
+                .attr("x",coordinates[5].x)
+                .attr("y",coordinates[5].y)
+                .attr("fill",color)
+                .text(d.F.toString());    
+        }
+        
+        </script>
+    </html>
